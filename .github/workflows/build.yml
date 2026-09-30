@@ -1,0 +1,44 @@
+name: Build both Minecraft targets
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    name: Minecraft ${{ matrix.minecraft }} / Java ${{ matrix.java }}
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - minecraft: '1.21.11'
+            java: '21'
+            directory: minecraft-1.21.11
+          - minecraft: '26.2'
+            java: '25'
+            directory: minecraft-26.2
+    defaults:
+      run:
+        working-directory: ${{ matrix.directory }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - name: Set up Java
+        uses: actions/setup-java@cf277c60eb25467037889841efdb72551f06f6c3 # v4
+        with:
+          distribution: temurin
+          java-version: ${{ matrix.java }}
+      - name: Build and run regression checks
+        run: ./gradlew --no-daemon build regressionTest
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: donutcfg-mc${{ matrix.minecraft }}
+          path: ${{ matrix.directory }}/build/libs/*.jar
+          if-no-files-found: error

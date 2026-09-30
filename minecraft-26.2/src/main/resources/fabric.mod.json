@@ -1,0 +1,19 @@
+{
+  "schemaVersion": 1,
+  "id": "donutcfg",
+  "version": "${version}",
+  "name": "Donutcfg",
+  "description": "Saves and restores DonutSMP settings and named Quick Buy configurations.",
+  "authors": ["DarkMafia"],
+  "environment": "client",
+  "entrypoints": {
+    "client": ["dev.darkmafia.donutcfg.DonutCfg"]
+  },
+  "mixins": ["donutcfg.mixins.json"],
+  "depends": {
+    "fabricloader": ">=0.19.5",
+    "minecraft": "26.2",
+    "java": ">=25",
+    "fabric-api": "*"
+  }
+}

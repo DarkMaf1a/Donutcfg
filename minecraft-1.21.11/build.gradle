@@ -1,0 +1,53 @@
+plugins {
+    id 'fabric-loom' version '1.14.10'
+}
+
+version = '0.5.0'
+group = 'dev.darkmafia'
+
+base {
+    archivesName = 'donutcfg'
+}
+
+dependencies {
+    minecraft 'com.mojang:minecraft:1.21.11'
+    mappings 'net.fabricmc:yarn:1.21.11+build.4:v2'
+    modImplementation 'net.fabricmc:fabric-loader:0.18.1'
+    modImplementation 'net.fabricmc.fabric-api:fabric-api:0.141.2+1.21.11'
+}
+
+java {
+    toolchain.languageVersion = JavaLanguageVersion.of(21)
+    withSourcesJar()
+}
+
+def modVersion = project.version.toString()
+processResources {
+    inputs.property 'version', modVersion
+    filesMatching('fabric.mod.json') {
+        expand 'version': modVersion
+    }
+}
+
+tasks.withType(JavaCompile).configureEach {
+    options.release = 21
+    options.encoding = 'UTF-8'
+}
+
+def regressionClasses = ['SaveSnapshotStabilityTest', 'CommandsAndProfilesTest', 'MessageFormattingTest']
+def regressionTasks = regressionClasses.collect { testName ->
+    tasks.register("run${testName}", JavaExec) {
+        dependsOn tasks.named('testClasses')
+        classpath = sourceSets.test.runtimeClasspath
+        mainClass = "dev.darkmafia.donutcfg.${testName}"
+        javaLauncher = javaToolchains.launcherFor {
+            languageVersion = JavaLanguageVersion.of(21)
+        }
+    }
+}
+tasks.register('regressionTest') {
+    group = 'verification'
+    description = 'Run standalone command, profile, stability, and formatting regression checks.'
+    dependsOn regressionTasks
+}
+tasks.named('check') { dependsOn tasks.named('regressionTest') }
