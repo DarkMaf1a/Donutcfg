@@ -51,3 +51,7 @@ tasks.register('regressionTest') {
     dependsOn regressionTasks
 }
 tasks.named('check') { dependsOn tasks.named('regressionTest') }
+
+// These are standalone main-method checks, not JUnit tests. The JavaExec
+// regressionTest tasks above remain mandatory and fail on assertion errors.
+tasks.named('test', Test) { failOnNoDiscoveredTests = false }

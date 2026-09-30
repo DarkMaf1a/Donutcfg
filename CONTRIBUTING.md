@@ -30,7 +30,7 @@ For the port, use `minecraft-26.2` and **JDK 25**, with the same commands. Outpu
 | `minecraft-1.21.11` | Loom 1.14.10, Gradle 9.2.1, Yarn 1.21.11+build.4, Fabric API 0.141.2+1.21.11 |
 | `minecraft-26.2` | Loom 1.18.2, Gradle 9.7.0, unobfuscated Mojang names, Fabric API 0.161.0+26.2 |
 
-The 26.2 project does not use Yarn or a manual remapping step. Both wrappers verify the distribution checksum.
+The 26.2 project does not use Yarn or a manual remapping step; it uses plain `implementation` dependencies with the non-remapping Loom plugin. Both wrappers verify the distribution checksum.
 
 ## Regression checks
 
@@ -41,7 +41,7 @@ The 26.2 project does not use Yarn or a manual remapping step. Both wrappers ver
 - `MessageFormattingTest`: colors and command-suggestion behavior.
 - `PresetPortTest` (26.2 only): real vanilla registry initialization and the 14-setting/43-item preset.
 
-These are local regression tests, **not** an end-to-end DonutSMP session. GitHub Actions builds both targets and runs these checks. Its artifacts are build outputs, not automatically published releases.
+These are standalone checks, not JUnit-discovered tests and **not** an end-to-end DonutSMP session. The Gradle `check` task requires all JavaExec regression tasks; an assertion failure fails the build. Empty JUnit discovery is allowed because no JUnit tests are defined. GitHub Actions builds both targets and runs these checks. Its artifacts are build outputs, not automatically published releases.
 
 ## Workflow
 
